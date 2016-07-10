@@ -1,0 +1,1 @@
+# puppet-omd-cluster
