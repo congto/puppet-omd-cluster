@@ -1,0 +1,20 @@
+#!/bin/bash
+
+name=$1
+id=$2
+port=$3
+
+if [ -d /omd/sites ] # is active node
+then
+    /usr/bin/omd create -u $id -g $id -A $name
+    /usr/bin/omd config $name set APACHE_TCP_PORT $port
+    /usr/bin/omd config $name set MULTISITE_AUTHORISATION on
+    /usr/bin/omd config $name set MULTISITE_COOKIE_AUTH on
+else # passive node
+    /usr/sbin/groupadd -g $id $name
+    /usr/sbin/useradd -c "OMD site $name" -u $id -G omd -b /omd/sites -g $id $name
+    /usr/sbin/usermod -a -G $name apache
+    /bin/echo "tmpfs  /omd/sites/$name/tmp tmpfs noauto,user,mode=755,uid=$name,gid=$name 0 0" >> /etc/fstab
+fi
+
+/bin/touch /etc/init-omd.$name

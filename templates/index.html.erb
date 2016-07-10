@@ -1,0 +1,28 @@
+<html>
+    <style type="text/css">
+            * { font: normal 12px sans-serif; }
+            table { border: 1px solid #8cacbb; border-spacing: 0px; border-collapse: collapse;}
+            table th { border: 1px solid #8cacbb; padding: .3em .5em; background: #dee7ec; font-weight: bold; text-align: left; }
+            table td { border: 1px solid #8cacbb; padding: .3em .5em; }
+    </style>
+    <body>
+        <center>
+        This is an omd-cluster driven by puppet and <a href="https://github.com/mathse/puppet-omd-cluster">puppet-omd-cluster</a><br><br>
+        available sites:
+        <table>
+            <tr>
+                <th>name</th>
+                <th>uid/gid</th>
+                <th>port</th>
+            </tr>
+            <% @cluster_sites.sort.each do |sitename, properties| -%>
+            <tr>
+                <td><a href="/<%= sitename %>"><%= sitename %></a></td>
+                <td><%= properties['id'] %></td>
+                <td><%= properties['port'] %></td>
+            </tr>
+            <% end -%>
+        </table>
+        </center>
+    </body>
+</html>

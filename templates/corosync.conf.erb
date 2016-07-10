@@ -1,0 +1,58 @@
+totem {
+    version: 2
+    token: 3000
+    token_retransmits_before_loss_const: 10
+    join: 60
+    consensus: 5000
+    vsftype: none
+    max_messages: 20
+    clear_node_high_bit: yes
+    secauth: off
+    threads: 0
+    rrp_mode: active
+
+    interface {
+        ringnumber: 0
+        bindnetaddr: <%= (@nodes[@hostname]['ring0ip'].split('.'))[0..2].join('.') %>.0
+        mcastaddr: 226.94.1.1
+        mcastport: 5410
+    }
+    interface {
+        ringnumber: 1
+        bindnetaddr: <%= (@nodes[@hostname]['ring1ip'].split('.'))[0..2].join('.') %>.0
+        mcastaddr: 226.94.1.1
+        mcastport: 5415
+    }
+}
+
+amf {
+    mode: disabled
+}
+
+service {
+    # Load the Pacemaker Cluster Resource Manager
+    ver: 1
+    #use_mgmtd: yes
+    name: pacemaker
+}
+
+aisexec {
+    user: root
+    group: root
+}
+
+logging {
+    fileline: off
+    to_stderr: yes
+    to_logfile: yes
+    logfile: /var/log/corosync.log
+    to_syslog: yes
+    syslog_facility: daemon
+    debug: on
+    timestamp: on
+    logger_subsys {
+        subsys: AMF
+        debug: off
+        tags: enter|leave|trace1|trace2|trace3|trace4|trace6
+    }
+}

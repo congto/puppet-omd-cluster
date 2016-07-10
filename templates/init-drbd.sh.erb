@@ -1,0 +1,36 @@
+#!/bin/bash
+if [ "$(hostname | rev | cut -c1)" == "1" ]
+then
+  echo "i am the first node"
+  /sbin/drbdadm -- --overwrite-data-of-peer primary romd
+  sleep 2
+else
+  echo "i am the second node"
+fi
+
+while [ "$(drbdadm cstate romd)" == "WFConnection" ]
+do
+  echo "waiting for peer"
+  sleep 1
+done
+
+while [ "$(drbdadm cstate romd | cut -c1-4)" == "Sync" ]
+do
+  cat /proc/drbd | grep "sync'ed"
+  sleep 1
+done
+
+if [ "$(hostname | rev | cut -c1)" == "1" ]
+then
+  <% if @omd_filesystem == "ext4" %>
+  mkfs.ext4 /dev/drbd0
+  <% end %>
+  <% if @omd_filesystem == "zfs" %>
+  /sbin/modprobe zfs
+  zpool create -o cachefile=none -m /mnt/omddata tank /dev/drbd0
+  <% end %>
+  crm resource cleanup pri_drbd_omd
+  crm resource cleanup pri_fs_omd
+fi
+
+touch /opt/omd/init-drbd

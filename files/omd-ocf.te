@@ -1,0 +1,21 @@
+module omd-ocf 1.0;
+
+require {
+	type httpd_t;
+	type commplex_port_t;
+	type usr_t;
+	type mnt_t;
+	class tcp_socket name_bind;
+	class lnk_file read;
+	class file append;
+	type cluster_tmpfs_t;
+	class dir write;
+
+}
+
+#============= httpd_t ==============
+allow httpd_t commplex_port_t:tcp_socket name_bind;
+allow httpd_t mnt_t:lnk_file read;
+allow httpd_t usr_t:file append;
+allow httpd_t cluster_tmpfs_t:dir write;
+allow httpd_t user_tmpfs_t:dir write;

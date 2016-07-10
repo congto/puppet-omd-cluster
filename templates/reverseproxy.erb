@@ -1,0 +1,40 @@
+<VirtualHost _default_:80>
+    ServerName <%= @cluster_name %>.<%= @domain %>
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://<%= @cluster_name %>.<%= @domain %>%{REQUEST_URI} [R,L]
+
+
+</VirtualHost>
+<VirtualHost _default_:443>
+    ServerName <%= @cluster_name %>.<%= @domain %>
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    SSLEngine on
+    SSLProxyEngine On
+    SSLCertificateFile    /etc/ssl-omd.pem
+    SSLCertificateKeyFile /etc/ssl-omd.key
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+
+<% @cluster_sites.sort.each do |sitename, properties| -%>
+    ProxyPass /<%= sitename %> http://0.0.0.0:<%= properties['port'] %>/
+    ProxyPassReverse /<%= sitename %> http://0.0.0.0:<%= properties['port'] %>/
+
+<% end -%>
+
+</VirtualHost>

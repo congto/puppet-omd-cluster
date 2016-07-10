@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ -d /mnt/omddata/sites ]
+then
+        for i in $(omd sites -b)
+        do
+                if [ "$(id $i 2> /dev/null)" != "" ]
+                then
+                        sessions=$(who -a | grep $i | wc -l)
+                        processes=$(ps -u $i | wc -l)
+                        openfiles=$(lsof -u $i | wc -l)
+                        echo "site:              $i"
+                        echo "open sessions:     $sessions"
+                        echo "running processes: $processes"
+                        echo "open files:        $openfiles"
+                        echo ""
+                fi
+        done
+
+        shells=$(lsof /mnt/omddata | egrep "bash|zsh" | wc -l)
+        echo "none-site shells: $shells"
+else
+        echo "I am a passive node"
+fi

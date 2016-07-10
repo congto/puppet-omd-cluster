@@ -1,0 +1,4 @@
+# clusterip and defined sites from puppet module omd-cluster
+<% @cluster_sites.sort.each do |sitename, properties| -%>
+<%= @cluster_ip %> <%= sitename %>
+<% end -%>
