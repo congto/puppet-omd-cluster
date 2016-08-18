@@ -1,6 +1,7 @@
-class omd-cluster (
+class omd_cluster (
     $nodes = undef,
     $cluster_sites = {"acme" => {'id' => '500', 'port' => '5000'}},
+    $multisite_sites = {},
     $cluster_name = "acme",
     $cluster_ip = undef,
     $cluster_quorum = "sdb",
@@ -35,15 +36,6 @@ class omd-cluster (
             unless => "/usr/sbin/crm configure show | /bin/grep -q 'order ord_omd_before_${site}'",
         }
     }
-#    define create::sitesPrimitive($sites) {
-#        $site = $name
-#
-#        exec { "/bin/init-omd.sh $site $id $port":
-#            creates => "/etc/init-omd.$site",
-#            require => File['/bin/init-omd.sh'],
-#        }
-#    }
-
 
     # add needed repos
     yumrepo { "elrepo":
@@ -83,7 +75,7 @@ class omd-cluster (
         $primitive_definition = "ocf:heartbeat:ZFS"
         $primitive_params = "params pool='tank' op start timeout='90' op stop timeout='90'"
         file { "/usr/lib/ocf/resource.d/heartbeat/ZFS":
-            source => "puppet:///modules/omd-cluster/ZFS.ocf",
+            source => "puppet:///modules/omd_cluster/ZFS.ocf",
             mode => 755,
             owner => root,
             group => root,
@@ -93,14 +85,14 @@ class omd-cluster (
             ensure => "directory"
         } ->
         file { "/usr/lib/ocf/lib/heartbeat/helpers/zfs-helper":
-            source => "puppet:///modules/omd-cluster/zfs-helper",
+            source => "puppet:///modules/omd_cluster/zfs-helper",
             mode => 755,
             owner => root,
             group => root,
             require => Package['pacemaker'],
         } ->
         file { "/bin/stmf-ha":
-            source => "puppet:///modules/omd-cluster/stmf-ha",
+            source => "puppet:///modules/omd_cluster/stmf-ha",
             mode => 555,
             owner => root,
             group => root,
@@ -110,7 +102,7 @@ class omd-cluster (
         $primitive_params = "device='/dev/drbd0' fstype='ext4' directory='/mnt/omddata/' meta target-role='Started'"
     }
     file { "/bin/nodeusage":
-        source => "puppet:///modules/omd-cluster/nodeusage",
+        source => "puppet:///modules/omd_cluster/nodeusage",
         mode => 555,
         owner => root,
         group => root,
@@ -119,7 +111,7 @@ class omd-cluster (
         mode => 644,
         owner => root,
         group => root,
-        content => template('omd-cluster/hosts.local.erb'),
+        content => template('omd_cluster/hosts.local.erb'),
     }
     exec {'disable_selinux_config':
         command => '/bin/sed -i "s/.*SELINUX=enforcing.*/SELINUX=disabled/" /etc/selinux/config',
@@ -186,21 +178,21 @@ class omd-cluster (
         mode => 644,
         owner => root,
         group => root,
-        content => template('omd-cluster/corosync.conf.erb'),
+        content => template('omd_cluster/corosync.conf.erb'),
         notify  => Service["corosync"],
     } ->
     file { "/etc/logrotate.d/corosync":
         mode => 644,
         owner => root,
         group => root,
-        source => "puppet:///modules/omd-cluster/corosync",
+        source => "puppet:///modules/omd_cluster/corosync",
         notify  => Service["corosync"],
     } ->
     file { "/etc/drbd.d/romd.res":
         mode => 644,
         owner => root,
         group => root,
-        content => template('omd-cluster/romd-drbd.res.erb'),
+        content => template('omd_cluster/romd-drbd.res.erb'),
         notify => Service['drbd'],
     } ->
     service { 'corosync':
@@ -229,13 +221,13 @@ class omd-cluster (
     } ->
 
     file { "/bin/init-drbd.sh":
-        content => template('omd-cluster/init-drbd.sh.erb'),
+        content => template('omd_cluster/init-drbd.sh.erb'),
         mode => 755,
         owner => root,
         group => root,
     } ->
     file { "/bin/init-omd.sh":
-        content => template('omd-cluster/init-omd.sh.erb'),
+        content => template('omd_cluster/init-omd.sh.erb'),
         mode => 755,
         owner => root,
         group => root,
@@ -285,13 +277,13 @@ class omd-cluster (
         ensure => "directory"
     } ->
     file { "/usr/lib/ocf/resource.d/omd/OMD":
-        source => "puppet:///modules/omd-cluster/OMD.ocf",
+        source => "puppet:///modules/omd_cluster/OMD.ocf",
         mode => 755,
         owner => root,
         group => root,
     } ->
     file { "/root/omd-ocf.te":
-        source => "puppet:///modules/omd-cluster/omd-ocf.te",
+        source => "puppet:///modules/omd_cluster/omd-ocf.te",
     } ->
     exec { "/bin/echo 'kernel.sem = 512 32000 100 512' >> /etc/sysctl.conf && /sbin/sysctl -p":
         unless => "/bin/grep -q 'kernel.sem = 512 32000 100 512' /etc/sysctl.conf",
@@ -337,22 +329,22 @@ class omd-cluster (
         mode => 644,
         owner => root,
         group => root,
-        content => template('omd-cluster/reverseproxy.erb'),
+        content => template('omd_cluster/reverseproxy.erb'),
         require => Package["httpd"],
     }
     file { "/var/www/html/index.html":
         mode => 644,
         owner => root,
         group => root,
-        content => template('omd-cluster/index.html.erb'),
+        content => template('omd_cluster/index.html.erb'),
         require => Package["httpd"],
     }
     # handy files for simple administration
-    file { "/etc/profile.d/omd-cluster.sh":
+    file { "/etc/profile.d/omd_cluster.sh":
         mode => 600,
         owner => root,
         group => root,
-        source => "puppet:///modules/omd-cluster/omd-cluster.sh.profile",
+        source => "puppet:///modules/omd_cluster/omd_cluster.sh.profile",
     }
 
 }

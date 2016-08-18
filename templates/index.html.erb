@@ -7,7 +7,7 @@
     </style>
     <body>
         <center>
-        This is an omd-cluster driven by puppet and <a href="https://github.com/mathse/puppet-omd-cluster">puppet-omd-cluster</a><br><br>
+        This is an omd_cluster driven by puppet and <a href="https://github.com/mathse/puppet-omd_cluster">puppet-omd_cluster</a><br><br>
         available sites:
         <table>
             <tr>
@@ -15,14 +15,24 @@
                 <th>uid/gid</th>
                 <th>port</th>
             </tr>
-            <% @cluster_sites.sort.each do |sitename, properties| -%>
+            <%
+            lowest = 30000
+            default = ""
+            @cluster_sites.sort.each do |sitename, properties| -%>
             <tr>
                 <td><a href="/<%= sitename %>"><%= sitename %></a></td>
                 <td><%= properties['id'] %></td>
                 <td><%= properties['port'] %></td>
             </tr>
+            <% if lowest > properties['id'].to_i
+                  lowest = properties['id'].to_i
+                  default = sitename
+               end
+            %>
             <% end -%>
         </table>
+        <br>you will be forwarded to <a href="/<%= default %>"><%= default %></a> within 5 seconds
+        <META http-equiv="refresh" content="5;URL=<%= default %>">
         </center>
     </body>
 </html>

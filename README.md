@@ -1,4 +1,4 @@
-# puppet-omd-cluster
+# omd_cluster
 
 ## 2-node cluster
 
@@ -6,7 +6,7 @@ the following definition will create a 2-node cluster with drbd setup on /dev/sd
 one site called acme will be created
 webinterface is accessable via https://acme.yourdomain/acme
 
-    class { 'omd-cluster':
+    class { 'omd_cluster':
         nodes => {
           host1 => {'ring0ip' => '10.0.1.183', 'ring0dev' => 'eth1', 'ring1ip' => '192.168.2.10', 'ring1dev' => 'eth2'},
           host2 => {'ring0ip' => '10.0.1.184', 'ring0dev' => 'eth1', 'ring1ip' => '192.168.2.11', 'ring1dev' => 'eth2'},
@@ -22,7 +22,7 @@ the following definition will create a 2-node cluster with drbd setup on /dev/sd
 two sites, pinky and brain, will be created
 webinterface is accessable via https://acme.yourdomain/pinky and https://acme.yourdomain/brain
 
-    class { 'omd-cluster':
+    class { 'omd_cluster':
         nodes => {
           host1 => {'ring0ip' => '10.0.1.183', 'ring0dev' => 'eth1', 'ring1ip' => '192.168.2.10', 'ring1dev' => 'eth2'},
           host2 => {'ring0ip' => '10.0.1.184', 'ring0dev' => 'eth1', 'ring1ip' => '192.168.2.11', 'ring1dev' => 'eth2'},

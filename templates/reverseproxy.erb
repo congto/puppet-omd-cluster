@@ -27,6 +27,7 @@
     SSLProxyEngine On
     SSLCertificateFile    /etc/ssl-omd.pem
     SSLCertificateKeyFile /etc/ssl-omd.key
+    SSLCACertificateFile  /etc/ssl-omd-chain.crt
 
     ProxyRequests Off
     ProxyPreserveHost On
@@ -36,5 +37,9 @@
     ProxyPassReverse /<%= sitename %> http://0.0.0.0:<%= properties['port'] %>/
 
 <% end -%>
+<% @multisite_sites.sort.each do |sitename, properties| -%>
+    ProxyPass /<%= sitename %> http://0.0.0.0:<%= properties['port'] %>/<%= sitename %>/
+    ProxyPassReverse /<%= sitename %> http://0.0.0.0:<%= properties['port'] %>/<%= sitename %>/
 
+<% end -%>
 </VirtualHost>
