@@ -76,7 +76,7 @@ class omd_cluster (
         $primitive_params = "params pool='tank' op start timeout='90' op stop timeout='90'"
         file { "/usr/lib/ocf/resource.d/heartbeat/ZFS":
             source => "puppet:///modules/omd_cluster/ZFS.ocf",
-            mode => 755,
+            mode => '0755',
             owner => root,
             group => root,
             require => Package['pacemaker'],
@@ -86,14 +86,14 @@ class omd_cluster (
         } ->
         file { "/usr/lib/ocf/lib/heartbeat/helpers/zfs-helper":
             source => "puppet:///modules/omd_cluster/zfs-helper",
-            mode => 755,
+            mode => '0755',
             owner => root,
             group => root,
             require => Package['pacemaker'],
         } ->
         file { "/bin/stmf-ha":
             source => "puppet:///modules/omd_cluster/stmf-ha",
-            mode => 555,
+            mode => '0555',
             owner => root,
             group => root,
         }
@@ -103,12 +103,12 @@ class omd_cluster (
     }
     file { "/bin/nodeusage":
         source => "puppet:///modules/omd_cluster/nodeusage",
-        mode => 555,
+        mode => '0555',
         owner => root,
         group => root,
     }
     file { "/etc/hosts.local":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => template('omd_cluster/hosts.local.erb'),
@@ -169,27 +169,27 @@ class omd_cluster (
         unless => "/sbin/lvs | /bin/grep lv_omd_quorum"
     } ->
     file { "/etc/default/corosync":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => "START=yes",
     } ->
     file { "/etc/corosync/corosync.conf":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => template('omd_cluster/corosync.conf.erb'),
         notify  => Service["corosync"],
     } ->
     file { "/etc/logrotate.d/corosync":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         source => "puppet:///modules/omd_cluster/corosync",
         notify  => Service["corosync"],
     } ->
     file { "/etc/drbd.d/romd.res":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => template('omd_cluster/romd-drbd.res.erb'),
@@ -222,13 +222,13 @@ class omd_cluster (
 
     file { "/bin/init-drbd.sh":
         content => template('omd_cluster/init-drbd.sh.erb'),
-        mode => 755,
+        mode => '0755',
         owner => root,
         group => root,
     } ->
     file { "/bin/init-omd.sh":
         content => template('omd_cluster/init-omd.sh.erb'),
-        mode => 755,
+        mode => '0755',
         owner => root,
         group => root,
     }
@@ -278,7 +278,7 @@ class omd_cluster (
     } ->
     file { "/usr/lib/ocf/resource.d/omd/OMD":
         source => "puppet:///modules/omd_cluster/OMD.ocf",
-        mode => 755,
+        mode => '0755',
         owner => root,
         group => root,
     } ->
@@ -326,14 +326,14 @@ class omd_cluster (
     }
 
     file { "/etc/httpd/conf.d/omd.conf":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => template('omd_cluster/reverseproxy.erb'),
         require => Package["httpd"],
     }
     file { "/var/www/html/index.html":
-        mode => 644,
+        mode => '0644',
         owner => root,
         group => root,
         content => template('omd_cluster/index.html.erb'),
@@ -341,7 +341,7 @@ class omd_cluster (
     }
     # handy files for simple administration
     file { "/etc/profile.d/omd_cluster.sh":
-        mode => 600,
+        mode => '0600',
         owner => root,
         group => root,
         source => "puppet:///modules/omd_cluster/omd_cluster.sh.profile",
